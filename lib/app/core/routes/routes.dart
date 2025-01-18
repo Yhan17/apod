@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
-
 import '../../modules/home/home_factory.dart';
 
 part 'page_router.dart';
