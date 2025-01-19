@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../../core/entities/apod_entity.dart';
+import '../../../../core/routes/routes.dart';
 import '../../../../core/templates/base_page.dart';
 import '../../../../core/utils/app_pipes.dart';
 import '../viewmodel/favorite_list_view_model.dart';
@@ -49,40 +50,49 @@ class FavoritesListPage extends BasePage<FavoriteListViewModel> {
   }
 
   Widget _buildApodCard(BuildContext context, ApodEntity apod) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-            child: _buildMediaThumb(context, apod),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              spacing: 8,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  apod.title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                Text(
-                  AppPipes.formatDate(apod.date, format: 'dd/MM/yyyy'),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
-                ),
-              ],
+    return GestureDetector(
+      onTap: apod.mediaType == MediaType.image
+          ? () => _navigateToDetailsPage(context, apod)
+          : null,
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        margin: const EdgeInsets.only(bottom: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
+              child: _buildMediaThumb(context, apod),
             ),
-          ),
-        ],
+            GestureDetector(
+              onTap: () => _navigateToDetailsPage(context, apod),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      apod.title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      AppPipes.formatDate(apod.date, format: 'dd/MM/yyyy'),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -106,5 +116,9 @@ class FavoritesListPage extends BasePage<FavoriteListViewModel> {
     } else {
       return CardVideoPlayerWidget(videoUrl: apod.url);
     }
+  }
+
+  void _navigateToDetailsPage(BuildContext context, ApodEntity apod) {
+    AppRoutes.favoriteDetails.push(context, arguments: apod);
   }
 }
