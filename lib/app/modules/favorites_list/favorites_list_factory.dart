@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'data/datasources/favorite_list_datasource.dart';
-import 'data/repositories/favorite_list_repository_impl.dart';
-import 'domain/usecases/get_favorite_list_usecase.dart';
+import 'data/favorite_list_data.dart';
+import 'domain/favorite_list_domain.dart';
 import 'presentation/favorites_list_presentation.dart';
-import 'presentation/viewmodel/favorite_list_view_model.dart';
 
 class FavoritesListFactory {
   static FavoriteListViewModel? _viewModel;
