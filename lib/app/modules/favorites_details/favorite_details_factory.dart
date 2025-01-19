@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/entities/apod_entity.dart';
 import 'data/favorite_details_data.dart';
+import 'domain/favorite_details_domain.dart';
 import 'presentation/favorite_details_presentation.dart';
 
 class FavoritesDetailsFactory {
@@ -21,9 +22,14 @@ class FavoritesDetailsFactory {
   static FavoriteDetailViewModel _buildViewModel(ApodEntity apod) {
     final service = SaveApodInHomeServiceImpl();
 
+    final datasource = RemoveApodDatasourceImpl();
+    final repository = RemoveApodRepositoryImpl(datasource);
+    final usecase = RemoveApodUseCase(repository);
+
     return FavoriteDetailViewModel(
       apod: apod,
       saveApodInHomeService: service,
+      removeApodUseCase: usecase,
     );
   }
 
