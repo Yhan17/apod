@@ -27,7 +27,27 @@ class HomePage extends BasePage<HomeViewModel> {
         backgroundColor: Colors.transparent,
       ),
       body: _BodyWidget(viewModel: viewModel),
-      bottomNavigationBar: BottomActionsWidget(viewModel: viewModel),
+      bottomNavigationBar: BottomActionsWidget(
+        onDateChange: () async {
+          final selectedDate = await showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(1995, 6, 16),
+            lastDate: DateTime.now(),
+          );
+          if (selectedDate != null) {
+            viewModel.fetchApod(date: selectedDate);
+          }
+        },
+        onFavorite: () async {
+          final message = await viewModel.saveApodToDatabase();
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message)),
+            );
+          }
+        },
+      ),
     );
   }
 }
