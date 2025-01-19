@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/routes/routes.dart';
 import '../../../../core/templates/base_page.dart';
 import '../../../../core/components/content_component.dart';
 import '../viewmodel/home_view_model.dart';
@@ -25,6 +26,14 @@ class HomePage extends BasePage<HomeViewModel> {
       appBar: AppBar(
         title: Text('NASA APOD', style: Theme.of(context).textTheme.titleLarge),
         backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              AppRoutes.favoriteList.push(context);
+            },
+          ),
+        ],
       ),
       body: _BodyWidget(viewModel: viewModel),
       bottomNavigationBar: BottomActionsWidget(
