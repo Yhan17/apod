@@ -20,4 +20,15 @@ class ApodRepositoryImpl implements ApodRepository {
       return Error(HttpFailure.unknown);
     }
   }
+
+  @override
+  Future<Result<Unit, Exception>> saveApod(ApodEntity? apod) async {
+    try {
+      final result = await _datasource.saveApod(apod);
+
+      return result;
+    } on Exception catch (e) {
+      return Error(e);
+    }
+  }
 }

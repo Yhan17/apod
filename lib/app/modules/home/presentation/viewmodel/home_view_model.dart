@@ -13,11 +13,12 @@ import '../../domain/home_domain.dart';
 
 class HomeViewModel extends ChangeNotifier with LoadingMixin {
   final GetApodUsecase _usecase;
+  final SaveApodUsecase _saveApodUsecase;
 
   ApodEntity? _apod;
   String? _errorMessage;
 
-  HomeViewModel(this._usecase);
+  HomeViewModel(this._usecase, this._saveApodUsecase);
 
   ApodEntity? get apod => _apod;
   String? get errorMessage => _errorMessage;
@@ -64,32 +65,38 @@ class HomeViewModel extends ChangeNotifier with LoadingMixin {
   }
 
   Future<String> saveApodToDatabase() async {
+    if (_apod == null) {
+      log(
+        name: 'APOD-DATABASE',
+        'Não foi possível salvar o APOD na base de dados, pois ele é nulo.',
+      );
+      return 'Não foi possível salvar o APOD na base de dados, pois ele é nulo.';
+    }
+
     try {
-      if (_apod == null) {
-        log(
-          name: 'APOD-DATABASE',
-          'Não foi possível salvar o APOD na base de dados, pois ele é nulo.',
-        );
-        return 'Não foi possível salvar o APOD na base de dados, pois ele é nulo.';
-      }
+      final result = await _saveApodUsecase(_apod);
 
-      final box = await Hive.openBox<ApodEntity>('apods');
-      final key = AppPipes.formatDate(_apod!.date);
-
-      if (await isApodSaved()) {
-        log(name: 'APOD-DATABASE', 'APOD já está salvo na base de dados.');
-        return 'APOD já está salvo na base de dados.';
-      }
-
-      await box.put(key, _apod!);
-      log(name: 'APOD-DATABASE', 'APOD salvo com sucesso na base de dados.');
-      return 'APOD salvo com sucesso na base de dados.';
+      return result.when(
+        (success) {
+          log(
+              name: 'APOD-DATABASE',
+              'APOD salvo com sucesso na base de dados.');
+          return 'APOD salvo com sucesso na base de dados.';
+        },
+        (error) {
+          log(
+            name: 'APOD-DATABASE',
+            'Erro ao salvar APOD na base de dados: ${error.toString()}',
+          );
+          return 'Erro ao salvar APOD na base de dados: ${error.toString()}';
+        },
+      );
     } catch (e) {
       log(
         name: 'APOD-DATABASE',
-        'Erro ao salvar APOD na base de dados: $e',
+        'Erro inesperado ao salvar APOD: $e',
       );
-      return 'Erro ao salvar APOD na base de dados: $e';
+      return 'Erro inesperado ao salvar APOD: $e';
     }
   }
 }
