@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/entities/apod_entity.dart';
+import '../entities/apod_entity.dart';
 import '../widgets/explanation_widget.dart';
 import '../widgets/title_and_date_widget.dart';
 import 'multimedia_component.dart';
@@ -16,26 +16,21 @@ class ContentComponent extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          // 1) Mídia (imagem/vídeo) com limite de altura
           Flexible(
-            flex: 0, // ou um valor de flex se quiser dividir espaço
+            flex: 0,
             child: ConstrainedBox(
               constraints: const BoxConstraints(
-                maxHeight: 300, // Ajuste conforme seu layout/design
+                maxHeight: 300,
               ),
               child: MultiMediaComponent(apod: apod),
             ),
           ),
           const SizedBox(height: 16),
-
-          // 2) Título e Data
           TitleAndDateWidget(
             title: apod.title,
             date: apod.date,
           ),
           const SizedBox(height: 16),
-
-          // 3) Explicação ocupando o espaço restante
           Expanded(
             child: ExplanationWidget(text: apod.explanation),
           ),

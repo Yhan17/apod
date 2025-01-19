@@ -17,7 +17,7 @@ class BottomActionsWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // BOTÃO DE DATA
+          
           Expanded(
             child: InkWell(
               onTap: () async {
@@ -48,9 +48,9 @@ class BottomActionsWidget extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 16), // espaço entre botões
+          const SizedBox(width: 16), 
 
-          // BOTÃO FAVORITAR
+          
           Expanded(
             flex: 4,
             child: InkWell(

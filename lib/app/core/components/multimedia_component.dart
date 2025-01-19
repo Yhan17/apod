@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/entities/apod_entity.dart';
+import '../entities/apod_entity.dart';
 import '../widgets/video_player_widget.dart';
 import '../widgets/zoomable_image_widget.dart';
 
