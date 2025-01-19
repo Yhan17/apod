@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/utils/app_pipes.dart';
+import '../utils/app_pipes.dart';
 
 class TitleAndDateWidget extends StatelessWidget {
   final String title;

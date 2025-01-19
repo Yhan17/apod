@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/templates/base_page.dart';
-import '../components/content_component.dart';
+import '../../../../core/components/content_component.dart';
 import '../viewmodel/home_view_model.dart';
 import '../widgets/bottom_actions_widget.dart';
 import '../widgets/custom_error_widget.dart';
