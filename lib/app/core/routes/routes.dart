@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../../modules/favorites_list/favorites_list_factory.dart';
 import '../../modules/home/home_factory.dart';
 
 part 'page_router.dart';
 
 abstract class AppRoutes {
   static const home = PageRoute<NoArgs>('/home');
+  static const favoriteList = PageRoute<NoArgs>('/favorites');
 
   static final Map<String, WidgetBuilder> builders = {
     home.path: (_) => HomeFactory.createPage(),
+    favoriteList.path: (_) => FavoritesListFactory.createPage(),
   };
 
   // ignore: unused_element

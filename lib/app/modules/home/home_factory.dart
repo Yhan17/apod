@@ -29,8 +29,9 @@ class HomeFactory {
     final datasource = ApodDatasourceImpl(client);
     final repository = ApodRepositoryImpl(datasource);
     final useCase = GetApodUsecase(repository);
+    final saveApodUseCase = SaveApodUsecase(repository);
 
-    return HomeViewModel(useCase);
+    return HomeViewModel(useCase, saveApodUseCase);
   }
 
   static void reset() {
