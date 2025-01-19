@@ -9,17 +9,31 @@ import 'presentation/home_presentation.dart';
 import 'presentation/page/home_page.dart';
 
 class HomeFactory {
+  static HomeViewModel? _viewModel;
+
   static Widget createPage({DateTime? date}) {
+    _viewModel ??= _buildViewModel();
+
+    if (date != null) {
+      _viewModel!.fetchApod(date: date);
+    }
+
+    return HomePage(viewModel: _viewModel!);
+  }
+
+  static HomeViewModel _buildViewModel() {
     final client = NasaApodClient(
       baseUrl: Environment.baseUrl,
       apiKey: Environment.apiKey,
     );
-
     final datasource = ApodDatasourceImpl(client);
     final repository = ApodRepositoryImpl(datasource);
     final useCase = GetApodUsecase(repository);
-    final viewModel = HomeViewModel(useCase);
 
-    return HomePage(viewModel: viewModel);
+    return HomeViewModel(useCase);
+  }
+
+  static void reset() {
+    _viewModel = null;
   }
 }

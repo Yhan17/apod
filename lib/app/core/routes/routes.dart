@@ -7,9 +7,9 @@ part 'page_router.dart';
 abstract class AppRoutes {
   static const home = PageRoute<NoArgs>('/home');
 
-  static Map<String, WidgetBuilder> get builders => {
-        home.path: (_) => HomeFactory.createPage(),
-      };
+  static final Map<String, WidgetBuilder> builders = {
+    home.path: (_) => HomeFactory.createPage(),
+  };
 
   // ignore: unused_element
   static T _argumentsOf<T>(BuildContext context) {
