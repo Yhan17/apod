@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'extensions/context_extension.dart';
 import 'routes/routes.dart';
+import 'theme/app_theme.dart';
 
 class AppWidget extends StatelessWidget {
   const AppWidget({super.key});
@@ -14,7 +15,9 @@ class AppWidget extends StatelessWidget {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       routes: AppRoutes.builders,
-      initialRoute: '/home', //TEMPORARIO
+      initialRoute: AppRoutes.home.path,
+      theme: AppTheme.nasaTheme,
+      darkTheme: AppTheme.nasaDarkTheme,
     );
   }
 }

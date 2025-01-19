@@ -1,8 +1,10 @@
 import '../http/failures/http_failure.dart';
+import 'package:intl/intl.dart' as intl;
 
 class AppPipes {
-  static String formatDate(DateTime date) {
-    return '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  static String formatDate(DateTime date, {String format = 'yyyy-MM-dd'}) {
+    final formatter = intl.DateFormat(format);
+    return formatter.format(date);
   }
 
   static HttpFailure handleHttpError(int statusCode) {
