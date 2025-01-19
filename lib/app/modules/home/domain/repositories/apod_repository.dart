@@ -5,4 +5,5 @@ import '../../../../core/entities/apod_entity.dart';
 
 abstract class ApodRepository {
   Future<Result<ApodEntity, HttpFailure>> getApod({DateTime? date});
+  Future<Result<Unit, Exception>> saveApod(ApodEntity? apod);
 }

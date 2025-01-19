@@ -28,6 +28,7 @@ dependencies:
   path_provider: ^2.1.5
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
+  focus_detector: ^2.0.1
 
 dev_dependencies:
   flutter_test:
