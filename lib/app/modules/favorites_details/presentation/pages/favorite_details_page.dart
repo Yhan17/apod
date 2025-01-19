@@ -36,6 +36,13 @@ class FavoriteDetailsPage extends BasePage<FavoriteDetailViewModel> {
               onTransformWidget: () {
                 viewModel.saveApodInHome();
               },
+              onUnfavorite: () async {
+                await viewModel.removeApod(
+                  () {
+                    Navigator.pop(context);
+                  },
+                );
+              },
             )
           : null,
     );

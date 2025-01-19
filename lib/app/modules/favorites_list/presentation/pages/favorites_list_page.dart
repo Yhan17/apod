@@ -12,8 +12,8 @@ class FavoritesListPage extends BasePage<FavoriteListViewModel> {
   const FavoritesListPage({super.key, required super.viewModel});
 
   @override
-  void onPageLoad(BuildContext context, FavoriteListViewModel viewModel) {
-    super.onPageLoad(context, viewModel);
+  void onPageAppear(BuildContext context, FavoriteListViewModel viewModel) {
+    super.onPageAppear(context, viewModel);
     viewModel.fetchStoredApods();
   }
 
