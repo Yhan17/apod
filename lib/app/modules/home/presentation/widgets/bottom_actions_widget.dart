@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-
-import '../home_presentation.dart';
-
 class BottomActionsWidget extends StatelessWidget {
-  final HomeViewModel viewModel;
+  final VoidCallback onFavorite;
+  final VoidCallback onDateChange;
 
-  const BottomActionsWidget({super.key, required this.viewModel});
+  const BottomActionsWidget({
+    super.key,
+    required this.onFavorite,
+    required this.onDateChange,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,20 +19,9 @@ class BottomActionsWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          
           Expanded(
             child: InkWell(
-              onTap: () async {
-                final selectedDate = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(1995, 6, 16),
-                  lastDate: DateTime.now(),
-                );
-                if (selectedDate != null) {
-                  viewModel.fetchApod(date: selectedDate);
-                }
-              },
+              onTap: onDateChange,
               borderRadius: BorderRadius.circular(8),
               child: Ink(
                 decoration: BoxDecoration(
@@ -48,17 +39,11 @@ class BottomActionsWidget extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 16), 
-
-          
+          const SizedBox(width: 16),
           Expanded(
             flex: 4,
             child: InkWell(
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('APOD favoritado!')),
-                );
-              },
+              onTap: onFavorite,
               borderRadius: BorderRadius.circular(8),
               child: Ink(
                 decoration: BoxDecoration(

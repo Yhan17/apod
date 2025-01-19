@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_annotation_target
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -27,12 +29,14 @@ enum MediaType {
 class ApodEntity with _$ApodEntity {
   @HiveType(typeId: 1)
   const factory ApodEntity({
-    @HiveField(0) required String? copyright,
+    @HiveField(0) String? copyright,
     @HiveField(1) required DateTime date,
     @HiveField(2) required String explanation,
-    @HiveField(3) required String? hdUrl,
-    @HiveField(4) required MediaType mediaType,
-    @HiveField(5) required String serviceVersion,
+    @HiveField(3) String? hdUrl,
+    @JsonKey(name: 'media_type') @HiveField(4) required MediaType mediaType,
+    @JsonKey(name: 'service_version')
+    @HiveField(5)
+    required String serviceVersion,
     @HiveField(6) required String title,
     @HiveField(7) required String url,
   }) = _ApodEntity;
