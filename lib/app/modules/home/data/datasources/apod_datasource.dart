@@ -16,9 +16,13 @@ abstract class ApodDatasource {
 
 class ApodDatasourceImpl implements ApodDatasource {
   final NasaApodClient _client;
+  final HiveInterface _hive;
   final String _boxName = 'apods';
 
-  ApodDatasourceImpl(this._client);
+  ApodDatasourceImpl(
+    this._client,
+    this._hive,
+  );
 
   @override
   Future<Result<ApodEntity, HttpFailure>> getApod({DateTime? date}) async {
@@ -43,7 +47,7 @@ class ApodDatasourceImpl implements ApodDatasource {
 
   @override
   Future<Result<Unit, Exception>> saveApod(ApodEntity? apod) async {
-    final box = await Hive.openBox<ApodEntity>(_boxName);
+    final box = await _hive.openBox<ApodEntity>(_boxName);
     try {
       if (apod == null) {
         log(

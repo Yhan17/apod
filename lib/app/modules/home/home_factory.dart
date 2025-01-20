@@ -1,3 +1,5 @@
+import 'package:hive/hive.dart';
+
 import '../../core/environment/environment.dart';
 import '../../core/http/nasa_apod_http_client.dart';
 
@@ -26,12 +28,14 @@ class HomeFactory {
       baseUrl: Environment.baseUrl,
       apiKey: Environment.apiKey,
     );
-    final datasource = ApodDatasourceImpl(client);
-    final savedDatasource = SavedApodDatasourceImpl();
-    final removeDatasource = RemoveApodDatasourceImpl();
+    final hive = Hive;
+
+    final datasource = ApodDatasourceImpl(client, hive);
+    final savedDatasource = SavedApodDatasourceImpl(hive);
+    final removeDatasource = RemoveApodFromHomeDatasourceImpl(hive);
 
     final repository = ApodRepositoryImpl(datasource);
-    final savedRepository = SavedApodRepositoryImpl(savedDatasource);
+    final savedRepository = IsSavedApodRepositoryImpl(savedDatasource);
     final removeRepository = RemoveApodFromHomeRepositoryImpl(removeDatasource);
 
     final useCase = GetApodUsecase(repository);

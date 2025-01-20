@@ -28,6 +28,10 @@ class HomeViewModel extends ViewModel {
   ApodEntity? get apod => _apod;
   String? get errorMessage => _errorMessage;
   FavoriteButtonLabel get buttonLabel => _buttonLabel;
+  set apod(ApodEntity? value) {
+    _apod = value;
+    notifyListeners();
+  }
 
   Future<void> fetchApod({DateTime? date}) async {
     await executeWithLoading(() async {
@@ -87,11 +91,13 @@ class HomeViewModel extends ViewModel {
 
           return 'APOD salvo com sucesso na base de dados.';
         },
-        (error) {
+        (error) async {
           log(
             name: 'APOD-DATABASE',
             'Erro ao salvar APOD na base de dados: ${error.toString()}',
           );
+          await isApodSaved();
+
           return 'Erro ao salvar APOD na base de dados: ${error.toString()}';
         },
       );
@@ -125,11 +131,13 @@ class HomeViewModel extends ViewModel {
 
           return 'APOD removido com sucesso na base de dados.';
         },
-        (error) {
+        (error) async {
           log(
             name: 'APOD-DATABASE',
             'Erro ao remover APOD na base de dados: ${error.toString()}',
           );
+          await isApodSaved();
+
           return 'Erro ao remover APOD na base de dados: ${error.toString()}';
         },
       );
