@@ -12,14 +12,15 @@ class FavoriteListDatasourceImpl implements FavoriteListDatasource {
 
   @override
   Future<Result<List<ApodEntity>, Exception>> fetchStoredApods() async {
+    final box = await Hive.openBox<ApodEntity>(_boxName);
     try {
-      final box = await Hive.openBox<ApodEntity>(_boxName);
-
       final storedApods = box.values.toList();
 
       return Success(storedApods);
     } catch (e) {
       return Error(Exception('Erro ao buscar os APODs armazenados: $e'));
+    } finally {
+      box.close();
     }
   }
 }

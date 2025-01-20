@@ -15,8 +15,8 @@ class RemoveApodDatasourceImpl implements RemoveApodFromHomeDatasource {
 
   @override
   Future<Result<Unit, Exception>> removeApod(ApodEntity apod) async {
+    final box = await Hive.openBox<ApodEntity>(_boxName);
     try {
-      final box = await Hive.openBox<ApodEntity>(_boxName);
       final key = AppPipes.formatDate(apod.date);
       if (box.containsKey(key)) {
         await box.delete(key);
@@ -26,6 +26,8 @@ class RemoveApodDatasourceImpl implements RemoveApodFromHomeDatasource {
       }
     } catch (e) {
       return Error(Exception('Failed to remove APOD: $e'));
+    } finally {
+      box.close();
     }
   }
 }

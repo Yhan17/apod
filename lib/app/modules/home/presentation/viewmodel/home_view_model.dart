@@ -40,7 +40,7 @@ class HomeViewModel extends ViewModel {
             await isApodSaved();
             break;
           case Error<ApodEntity, HttpFailure>():
-            _errorMessage = '${result.error}';
+            _errorMessage = result.error.message;
             break;
         }
       } catch (e) {
