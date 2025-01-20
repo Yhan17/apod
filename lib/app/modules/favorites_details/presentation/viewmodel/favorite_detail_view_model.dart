@@ -17,9 +17,10 @@ class FavoriteDetailViewModel extends ViewModel {
     required this.removeApodUseCase,
   });
 
-  Future<void> saveApodInHome() async {
+  Future<void> saveApodInHome({required VoidCallback onTransformWidget}) async {
     executeWithLoading(() async {
       await saveApodInHomeService(apod);
+      onTransformWidget();
     });
   }
 

@@ -2,7 +2,7 @@ import 'package:multiple_result/multiple_result.dart';
 
 import '../../../../core/entities/apod_entity.dart';
 import '../../domain/repositories/remove_apod_repository.dart';
-import '../datasource/remove_apod_datasource.dart';
+import '../datasources/remove_apod_datasource.dart';
 
 class RemoveApodRepositoryImpl implements RemoveApodRepository {
   final RemoveApodDatasource _datasource;
