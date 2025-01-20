@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 import 'data/favorite_list_data.dart';
 import 'domain/favorite_list_domain.dart';
@@ -16,7 +17,9 @@ class FavoritesListFactory {
   }
 
   static FavoriteListViewModel _buildViewModel() {
-    final datasource = FavoriteListDatasourceImpl();
+    final hive = Hive;
+
+    final datasource = FavoriteListDatasourceImpl(hive);
     final repository = FavoriteListRepositoryImpl(datasource);
     final useCase = GetFavoriteListUsecase(repository);
 
