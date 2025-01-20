@@ -38,7 +38,13 @@ class FavoriteDetailsPage extends BasePage<FavoriteDetailViewModel> {
       bottomNavigationBar: DetailsBottomActionWidget(
         showTransformButton: viewModel.apod.mediaType == MediaType.image,
         onTransformWidget: () {
-          viewModel.saveApodInHome();
+          viewModel.saveApodInHome(
+            onTransformWidget: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Widget definido na home do seu dispostiivo')),
+              );
+            },
+          );
         },
         onUnfavorite: () async {
           await viewModel.removeApod(
