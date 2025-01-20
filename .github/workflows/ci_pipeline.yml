@@ -1,0 +1,66 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.27.2"
+
+      - name: Set up Environment Variables
+        run: |
+          echo "BASE_URL=${{ secrets.BASE_URL }}" > production.env
+          echo "API_KEY=${{ secrets.API_KEY }}" >> production.env
+
+      - name: Cache Flutter SDK
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            # Adicione outros caminhos se necessário
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Run Tests
+        run: flutter test --coverage
+
+      - name: Generate Coverage Report
+        run: |
+          flutter pub global activate coverage
+          flutter pub global run coverage:format_coverage \
+            --lcov \
+            --in=coverage/lcov.info \
+            --out=coverage/lcovformatted.info \
+            --packages=.packages \
+            --report-on=lib
+
+      - name: Build APK
+        run: flutter build apk --dart-define-from-file production.env
+
+      - name: Upload Test Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: coverage/lcovformatted.info
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
