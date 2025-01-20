@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Development",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "args": [
+                "--dart-define-from-file",
+                "development.env",
+                "--no-enable-impeller"
+            ]
+        },
+        {
+            "name": "Production",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "args": [
+                "--dart-define-from-file",
+                "production.env",
+                "--no-enable-impeller"
+            ]
+        }
+    ]
+}
