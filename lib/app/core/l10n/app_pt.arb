@@ -1,6 +1,9 @@
 {
+    "@@locale": "pt",
     "title": "APOD NASA",
-    "@title": {},
+    "@title": {
+        "description": "Label for app title."
+    },
     "favorite": "Favoritar",
     "@favorite": {
         "description": "Label for the button to favorite an item."
@@ -16,5 +19,17 @@
     "empty": "",
     "@empty": {
         "description": "Empty message"
+    },
+    "imageErrorLoading": "Erro ao carregar a imagem",
+    "@imageErrorLoading": {
+        "description": "Label for image loading in cards"
+    },
+    "tryAgain": "Tentar novamente",
+    "@tryAgain": {
+        "description": "Label for image try again button"
+    },
+    "convertToWidget": "Transformar em Widget",
+    "@convertToWidget": {
+        "description": "Label for transform in widget button"
     }
 }

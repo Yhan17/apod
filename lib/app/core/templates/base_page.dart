@@ -3,10 +3,18 @@
 import 'package:flutter/material.dart';
 import 'package:focus_detector/focus_detector.dart';
 
+import 'notifiers/loading_notifier.dart';
+
 abstract class BasePage<VM extends ChangeNotifier> extends StatefulWidget {
   final VM viewModel;
 
-  const BasePage({super.key, required this.viewModel});
+  final bool keepAlive;
+
+  const BasePage({
+    super.key,
+    required this.viewModel,
+    this.keepAlive = true,
+  });
 
   Widget buildPage(BuildContext context, VM viewModel);
 
@@ -38,22 +46,25 @@ class _BasePageState<VM extends ChangeNotifier> extends State<BasePage<VM>>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return FocusDetector(
-      onFocusGained: () {
-        widget.onPageAppear(context, widget.viewModel);
-      },
-      onFocusLost: () {
-        widget.onPageDisappear(context, widget.viewModel);
-      },
-      child: AnimatedBuilder(
-        animation: widget.viewModel,
-        builder: (context, _) {
-          return widget.buildPage(context, widget.viewModel);
+    return LoadingNotifier(
+      notifier: widget.viewModel,
+      child: FocusDetector(
+        onFocusGained: () {
+          widget.onPageAppear(context, widget.viewModel);
         },
+        onFocusLost: () {
+          widget.onPageDisappear(context, widget.viewModel);
+        },
+        child: AnimatedBuilder(
+          animation: widget.viewModel,
+          builder: (context, _) {
+            return widget.buildPage(context, widget.viewModel);
+          },
+        ),
       ),
     );
   }
 
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => widget.keepAlive;
 }

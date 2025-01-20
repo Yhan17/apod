@@ -7,7 +7,6 @@ import '../../../../core/components/content_component.dart';
 import '../viewmodel/home_view_model.dart';
 import '../widgets/bottom_actions_widget.dart';
 import '../widgets/custom_error_widget.dart';
-import '../widgets/loading_widget.dart';
 
 class HomePage extends BasePage<HomeViewModel> {
   const HomePage({
@@ -87,10 +86,6 @@ class _BodyWidget extends StatelessWidget {
       return CustomErrorWidget(errorMessage: viewModel.errorMessage!);
     }
 
-    if (viewModel.apod == null) {
-      return const LoadingWidget();
-    }
-
-    return ContentComponent(apod: viewModel.apod!);
+    return ContentComponent(apod: viewModel.apod);
   }
 }

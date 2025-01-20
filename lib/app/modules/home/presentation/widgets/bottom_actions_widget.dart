@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
+import '../../../../core/extensions/context_extension.dart';
 import '../common/favorite_button_label.dart';
 
 class BottomActionsWidget extends StatelessWidget {
@@ -22,52 +24,55 @@ class BottomActionsWidget extends StatelessWidget {
           maxHeight: 80,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: InkWell(
-                onTap: onDateChange,
-                borderRadius: BorderRadius.circular(8),
-                child: Ink(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: const Icon(
-                      Icons.date_range,
-                      color: Colors.white,
+        child: Skeletonizer(
+          enabled: context.isLoading,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap: onDateChange,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: const Icon(
+                        Icons.date_range,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              flex: 4,
-              child: InkWell(
-                onTap: onFavorite,
-                borderRadius: BorderRadius.circular(8),
-                child: Ink(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Text(
-                      buttonLabel.getLabel(context),
-                      style: TextStyle(color: Colors.white),
+              const SizedBox(width: 16),
+              Expanded(
+                flex: 4,
+                child: InkWell(
+                  onTap: onFavorite,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Text(
+                        buttonLabel.getLabel(context),
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

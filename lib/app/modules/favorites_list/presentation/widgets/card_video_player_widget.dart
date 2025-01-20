@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:video_player/video_player.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
+import '../../../../core/extensions/context_extension.dart';
 
 class CardVideoPlayerWidget extends StatefulWidget {
   final String videoUrl;
@@ -12,20 +15,32 @@ class CardVideoPlayerWidget extends StatefulWidget {
 }
 
 class _CardVideoPlayerWidgetState extends State<CardVideoPlayerWidget> {
-  late VideoPlayerController _videoController;
-  late YoutubePlayerController _youtubeController;
+  late final bool _isYoutube;
+  YoutubePlayerController? _youtubeController;
+  VideoPlayerController? _videoController;
 
-  bool _isYoutube = false;
-  bool _isInitialized = false;
+  late Future<void> _initializeFuture;
 
   @override
   void initState() {
     super.initState();
-    _initializePlayer();
+    _initializeFuture = _initializePlayer(widget.videoUrl);
   }
 
-  Future<void> _initializePlayer() async {
-    final videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
+  @override
+  void didUpdateWidget(covariant CardVideoPlayerWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.videoUrl != widget.videoUrl) {
+      _disposeControllers();
+
+      setState(() {
+        _initializeFuture = _initializePlayer(widget.videoUrl);
+      });
+    }
+  }
+
+  Future<void> _initializePlayer(String url) async {
+    final videoId = YoutubePlayer.convertUrlToId(url);
 
     if (videoId != null) {
       _isYoutube = true;
@@ -35,52 +50,71 @@ class _CardVideoPlayerWidgetState extends State<CardVideoPlayerWidget> {
           autoPlay: false,
         ),
       );
-
-      setState(() {
-        _isInitialized = true;
-      });
+      return Future.value();
     } else {
-      _videoController =
-          VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
-      try {
-        await _videoController.initialize();
-        _videoController.setLooping(false);
-        setState(() {
-          _isInitialized = true;
-        });
-      } catch (e) {
-        debugPrint('Erro ao inicializar vídeo: $e');
-        setState(() {
-          _isInitialized = false;
-        });
-      }
+      _isYoutube = false;
+      _videoController = VideoPlayerController.networkUrl(Uri.parse(url));
+      await _videoController!.initialize();
+      _videoController!.setLooping(false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_isInitialized) {
-      return const SizedBox(
-        height: 250,
-        child: Center(child: CircularProgressIndicator()),
-      );
-    }
+    return Skeletonizer(
+      enabled: context.isLoading,
+      child: FutureBuilder<void>(
+        future: _initializeFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return _buildLoadingPlaceholder();
+          }
 
-    if (_isYoutube) {
-      return YoutubePlayer(
-        controller: _youtubeController,
-        showVideoProgressIndicator: true,
-      );
-    }
+          if (snapshot.hasError) {
+            return _buildErrorPlaceholder(snapshot.error);
+          }
 
-    return AspectRatio(
-      aspectRatio: _videoController.value.aspectRatio,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          VideoPlayer(_videoController),
-          _buildPlayPauseButton(),
-        ],
+          if (_isYoutube && _youtubeController != null) {
+            return YoutubePlayer(
+              controller: _youtubeController!,
+              showVideoProgressIndicator: true,
+            );
+          }
+
+          if (!_isYoutube && _videoController != null) {
+            return AspectRatio(
+              aspectRatio: _videoController!.value.aspectRatio,
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  VideoPlayer(_videoController!),
+                  _buildPlayPauseButton(),
+                ],
+              ),
+            );
+          }
+
+          return _buildErrorPlaceholder('Não foi possível reproduzir o vídeo.');
+        },
+      ),
+    );
+  }
+
+  Widget _buildLoadingPlaceholder() {
+    return const SizedBox(
+      height: 250,
+      child: Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Widget _buildErrorPlaceholder(Object? error) {
+    return SizedBox(
+      height: 250,
+      child: Center(
+        child: Text(
+          'Erro ao inicializar o vídeo: $error',
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
@@ -89,17 +123,17 @@ class _CardVideoPlayerWidgetState extends State<CardVideoPlayerWidget> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          if (_videoController.value.isPlaying) {
-            _videoController.pause();
+          if (_videoController!.value.isPlaying) {
+            _videoController!.pause();
           } else {
-            _videoController.play();
+            _videoController!.play();
           }
         });
       },
       child: Container(
         color: Colors.black26,
         child: Icon(
-          _videoController.value.isPlaying
+          _videoController!.value.isPlaying
               ? Icons.pause_circle
               : Icons.play_circle,
           color: Colors.white,
@@ -110,12 +144,23 @@ class _CardVideoPlayerWidgetState extends State<CardVideoPlayerWidget> {
   }
 
   @override
-  void dispose() {
-    if (_isYoutube) {
-      _youtubeController.dispose();
-    } else {
-      _videoController.dispose();
+  void deactivate() {
+    super.deactivate();
+    if (_isYoutube && _youtubeController != null) {
+      _youtubeController!.pause();
+    } else if (!_isYoutube && _videoController != null) {
+      _videoController!.pause();
     }
+  }
+
+  @override
+  void dispose() {
+    _disposeControllers();
     super.dispose();
+  }
+
+  void _disposeControllers() {
+    _youtubeController?.dispose();
+    _videoController?.dispose();
   }
 }

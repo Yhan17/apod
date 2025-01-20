@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/components/content_component.dart';
 import '../../../../core/entities/apod_entity.dart';
+import '../../../../core/extensions/context_extension.dart';
 import '../../../../core/templates/base_page.dart';
 import '../viewmodel/favorite_detail_view_model.dart';
 import '../widgets/details_bottom_action_widget.dart';
@@ -27,24 +28,26 @@ class FavoriteDetailsPage extends BasePage<FavoriteDetailViewModel> {
   Widget buildPage(BuildContext context, FavoriteDetailViewModel viewModel) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('NASA APOD', style: Theme.of(context).textTheme.titleLarge),
+        title: Text(
+          context.loc.title,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         backgroundColor: Colors.transparent,
       ),
       body: _BodyWidget(viewModel: viewModel),
-      bottomNavigationBar: viewModel.apod.mediaType == MediaType.image
-          ? DetailsBottomActionWidget(
-              onTransformWidget: () {
-                viewModel.saveApodInHome();
-              },
-              onUnfavorite: () async {
-                await viewModel.removeApod(
-                  () {
-                    Navigator.pop(context);
-                  },
-                );
-              },
-            )
-          : null,
+      bottomNavigationBar: DetailsBottomActionWidget(
+        showTransformButton: viewModel.apod.mediaType == MediaType.image,
+        onTransformWidget: () {
+          viewModel.saveApodInHome();
+        },
+        onUnfavorite: () async {
+          await viewModel.removeApod(
+            () {
+              Navigator.pop(context);
+            },
+          );
+        },
+      ),
     );
   }
 }

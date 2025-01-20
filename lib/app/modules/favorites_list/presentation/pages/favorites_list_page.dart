@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../core/entities/apod_entity.dart';
+import '../../../../core/extensions/context_extension.dart';
 import '../../../../core/routes/routes.dart';
 import '../../../../core/templates/base_page.dart';
 import '../../../../core/utils/app_pipes.dart';
@@ -19,32 +21,25 @@ class FavoritesListPage extends BasePage<FavoriteListViewModel> {
 
   @override
   Widget buildPage(BuildContext context, FavoriteListViewModel viewModel) {
-    if (viewModel.favorites.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('APODs Salvos'),
-          backgroundColor: Colors.transparent,
-        ),
-        body: const Center(child: Text('Nenhum APOD salvo ainda')),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'APODs Salvos',
+          context.loc.title,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        itemCount: viewModel.favorites.length,
-        itemBuilder: (context, index) {
-          final apod = viewModel.favorites[index];
-          return _buildApodCard(context, apod);
-        },
+      body: Skeletonizer(
+        enabled: context.isLoading,
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          itemCount: viewModel.favorites.length,
+          itemBuilder: (context, index) {
+            final apod = viewModel.favorites[index];
+            return _buildApodCard(context, apod);
+          },
+        ),
       ),
     );
   }
@@ -104,8 +99,16 @@ class FavoritesListPage extends BasePage<FavoriteListViewModel> {
         width: double.infinity,
         height: 200,
         fit: BoxFit.cover,
-        placeholder: (ctx, url) => const Center(
-          child: CircularProgressIndicator(),
+        placeholder: (ctx, url) => Container(
+          height: 200,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.grey[800],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Center(
+            child: Icon(Icons.image),
+          ),
         ),
         errorWidget: (ctx, url, error) => Container(
           height: 200,
