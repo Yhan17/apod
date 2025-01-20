@@ -46,6 +46,11 @@ void main() {
     final mockJson = jsonEncode(mockApod.toJson());
 
     group('getApod', () {
+      setUp(() {
+        when(() => mockHive.isBoxOpen('apods')).thenReturn(true);
+        when(() => mockHive.box<ApodEntity>(any())).thenReturn(mockBox);
+      });
+      
       test('should return ApodEntity when client call is successful', () async {
         when(() => mockClient.get(mockUri))
             .thenAnswer((_) async => http.Response(mockJson, 200));
@@ -85,6 +90,8 @@ void main() {
         when(() => mockHive.openBox<ApodEntity>(any()))
             .thenAnswer((_) async => mockBox);
         when(() => mockBox.close()).thenAnswer((_) async {});
+        when(() => mockHive.isBoxOpen('apods')).thenReturn(true);
+        when(() => mockHive.box<ApodEntity>(any())).thenReturn(mockBox);
       });
 
       test('should save ApodEntity successfully', () async {
@@ -96,7 +103,6 @@ void main() {
 
         expect(result.isSuccess(), isTrue);
         verify(() => mockBox.put(key, mockApod)).called(1);
-        verify(() => mockBox.close()).called(1);
       });
 
       test('should return Exception when saving a null ApodEntity', () async {
@@ -115,7 +121,6 @@ void main() {
 
         expect(result.isError(), isTrue);
         expect(result.tryGetError(), isA<Exception>());
-        verify(() => mockBox.close()).called(1);
       });
 
       test('should return Exception when saving fails', () async {
@@ -128,7 +133,6 @@ void main() {
 
         expect(result.isError(), isTrue);
         expect(result.tryGetError(), isA<Exception>());
-        verify(() => mockBox.close()).called(1);
       });
     });
   });
