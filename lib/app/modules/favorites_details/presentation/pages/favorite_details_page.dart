@@ -41,7 +41,7 @@ class FavoriteDetailsPage extends BasePage<FavoriteDetailViewModel> {
           viewModel.saveApodInHome(
             onTransformWidget: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Widget definido na home do seu dispostiivo')),
+                SnackBar(content: Text(context.loc.definedWidget)),
               );
             },
           );
