@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+
+import '../common/favorite_button_label.dart';
+
 class BottomActionsWidget extends StatelessWidget {
   final VoidCallback onFavorite;
   final VoidCallback onDateChange;
+  final FavoriteButtonLabel buttonLabel;
 
   const BottomActionsWidget({
     super.key,
     required this.onFavorite,
     required this.onDateChange,
+    required this.buttonLabel,
   });
 
   @override
@@ -54,8 +59,8 @@ class BottomActionsWidget extends StatelessWidget {
                   child: Container(
                     alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: const Text(
-                      'Favoritar',
+                    child: Text(
+                      buttonLabel.getLabel(context),
                       style: TextStyle(color: Colors.white),
                     ),
                   ),

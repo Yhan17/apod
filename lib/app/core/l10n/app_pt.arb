@@ -1,4 +1,20 @@
 {
     "title": "APOD NASA",
-    "@title": {}
+    "@title": {},
+    "favorite": "Favoritar",
+    "@favorite": {
+        "description": "Label for the button to favorite an item."
+    },
+    "unfavorite": "Desfavoritar",
+    "@unfavorite": {
+        "description": "Label for the button to unfavorite an item."
+    },
+    "error": "Erro",
+    "@error": {
+        "description": "Label for an error message."
+    },
+    "empty": "",
+    "@empty": {
+        "description": "Empty message"
+    }
 }

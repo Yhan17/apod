@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/extensions/context_extension.dart';
 import '../../../../core/routes/routes.dart';
 import '../../../../core/templates/base_page.dart';
 import '../../../../core/components/content_component.dart';
@@ -24,7 +25,10 @@ class HomePage extends BasePage<HomeViewModel> {
   Widget buildPage(BuildContext context, HomeViewModel viewModel) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('NASA APOD', style: Theme.of(context).textTheme.titleLarge),
+        title: Text(
+          context.loc.title,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
@@ -37,6 +41,7 @@ class HomePage extends BasePage<HomeViewModel> {
       ),
       body: _BodyWidget(viewModel: viewModel),
       bottomNavigationBar: BottomActionsWidget(
+        buttonLabel: viewModel.buttonLabel,
         onDateChange: () async {
           final selectedDate = await showDatePicker(
             context: context,
@@ -49,11 +54,21 @@ class HomePage extends BasePage<HomeViewModel> {
           }
         },
         onFavorite: () async {
-          final message = await viewModel.saveApodToDatabase();
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(message)),
-            );
+          final isApodAlreadySaved = await viewModel.isApodSaved();
+          if (isApodAlreadySaved) {
+            final message = await viewModel.removeApodFromDatabase();
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message)),
+              );
+            }
+          } else {
+            final message = await viewModel.saveApodToDatabase();
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message)),
+              );
+            }
           }
         },
       ),
