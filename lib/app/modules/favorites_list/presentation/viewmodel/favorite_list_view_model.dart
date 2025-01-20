@@ -11,6 +11,11 @@ class FavoriteListViewModel extends ViewModel {
 
   List<ApodEntity> get favorites => _favorites;
   String? get errorMessage => _errorMessage;
+  
+  set favorites(List<ApodEntity> list) {
+    _favorites = list;
+    notifyListeners();
+  }
 
   FavoriteListViewModel(this._getFavoriteListUsecase);
 
