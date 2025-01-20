@@ -6,7 +6,7 @@ import '../widgets/title_and_date_widget.dart';
 import 'multimedia_component.dart';
 
 class ContentComponent extends StatelessWidget {
-  final ApodEntity apod;
+  final ApodEntity? apod;
 
   const ContentComponent({super.key, required this.apod});
 
@@ -27,12 +27,12 @@ class ContentComponent extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           TitleAndDateWidget(
-            title: apod.title,
-            date: apod.date,
+            title: apod?.title,
+            date: apod?.date,
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: ExplanationWidget(text: apod.explanation),
+            child: ExplanationWidget(text: apod?.explanation),
           ),
         ],
       ),

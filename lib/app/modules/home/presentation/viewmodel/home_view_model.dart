@@ -1,15 +1,14 @@
 import 'dart:developer';
 
-import 'package:flutter/material.dart';
 import 'package:multiple_result/multiple_result.dart';
 
 import '../../../../core/entities/apod_entity.dart';
 import '../../../../core/http/failures/http_failure.dart';
-import '../../../../core/mixins/loading_mixin.dart';
+import '../../../../core/types/view_model_type.dart';
 import '../../domain/home_domain.dart';
 import '../common/favorite_button_label.dart';
 
-class HomeViewModel extends ChangeNotifier with LoadingMixin {
+class HomeViewModel extends ViewModel {
   final GetApodUsecase _usecase;
   final SaveApodUsecase _saveApodUsecase;
   final IsPodSavedUsecase _isPodSavedUsecase;
@@ -51,26 +50,20 @@ class HomeViewModel extends ChangeNotifier with LoadingMixin {
   }
 
   Future<bool> isApodSaved() async {
+    bool resultValue = false;
     try {
       final result = await _isPodSavedUsecase(_apod!);
       if (result) {
         _buttonLabel = FavoriteButtonLabel.unfavorite;
-        notifyListeners();
-        return true;
+        resultValue = true;
+      } else {
+        _buttonLabel = FavoriteButtonLabel.favorite;
       }
-      _buttonLabel = FavoriteButtonLabel.favorite;
-      notifyListeners();
-
-      return false;
     } catch (e) {
-      log(
-        name: 'APOD-DATABASE',
-        'Erro inesperado ao verificar se o APOD já está salvo: $e',
-      );
       _buttonLabel = FavoriteButtonLabel.error;
-      notifyListeners();
-      return false;
     }
+    notifyListeners();
+    return resultValue;
   }
 
   Future<String> saveApodToDatabase() async {
