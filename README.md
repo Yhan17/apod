@@ -101,6 +101,15 @@ https://github.com/user-attachments/assets/0e87333f-b369-43c2-add5-67fb20bd0a40
 ### Tela de erro
 ![Tela de erro](/docs/tela_erro.png)
 
+### Tela de vídeo
+![Tela de vídeo](/docs/video_return.png)
+
+### Zoom e Scroll Imagem
+![Zoom e Scroll Imagem](/docs/image_zoom.gif)
+
+### Lista de favoritos com vídeo
+![Lista de favoritos com vídeo](/docs/list_favorites_with_video.gif)
+
 ### Seletor de Data
 ![Seletor de Data](/docs/seletor_data.png)
 
