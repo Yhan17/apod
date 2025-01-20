@@ -31,5 +31,9 @@
     "convertToWidget": "Transformar em Widget",
     "@convertToWidget": {
         "description": "Label for transform in widget button"
+    },
+    "loadingError": "Ops! Algo deu errado...",
+    "@loadingError": {
+        "description": "Label for error page"
     }
 }

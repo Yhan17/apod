@@ -39,38 +39,40 @@ class HomePage extends BasePage<HomeViewModel> {
         ],
       ),
       body: _BodyWidget(viewModel: viewModel),
-      bottomNavigationBar: BottomActionsWidget(
-        buttonLabel: viewModel.buttonLabel,
-        onDateChange: () async {
-          final selectedDate = await showDatePicker(
-            context: context,
-            initialDate: DateTime.now(),
-            firstDate: DateTime(1995, 6, 16),
-            lastDate: DateTime.now(),
-          );
-          if (selectedDate != null) {
-            viewModel.fetchApod(date: selectedDate);
-          }
-        },
-        onFavorite: () async {
-          final isApodAlreadySaved = await viewModel.isApodSaved();
-          if (isApodAlreadySaved) {
-            final message = await viewModel.removeApodFromDatabase();
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(message)),
-              );
-            }
-          } else {
-            final message = await viewModel.saveApodToDatabase();
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(message)),
-              );
-            }
-          }
-        },
-      ),
+      bottomNavigationBar: viewModel.errorMessage == null
+          ? BottomActionsWidget(
+              buttonLabel: viewModel.buttonLabel,
+              onDateChange: () async {
+                final selectedDate = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(1995, 6, 16),
+                  lastDate: DateTime.now(),
+                );
+                if (selectedDate != null) {
+                  viewModel.fetchApod(date: selectedDate);
+                }
+              },
+              onFavorite: () async {
+                final isApodAlreadySaved = await viewModel.isApodSaved();
+                if (isApodAlreadySaved) {
+                  final message = await viewModel.removeApodFromDatabase();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(message)),
+                    );
+                  }
+                } else {
+                  final message = await viewModel.saveApodToDatabase();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(message)),
+                    );
+                  }
+                }
+              },
+            )
+          : null,
     );
   }
 }
@@ -83,7 +85,12 @@ class _BodyWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (viewModel.errorMessage != null) {
-      return CustomErrorWidget(errorMessage: viewModel.errorMessage!);
+      return CustomErrorWidget(
+        errorMessage: viewModel.errorMessage!,
+        onRetry: () {
+          viewModel.fetchApod();
+        },
+      );
     }
 
     return ContentComponent(apod: viewModel.apod);

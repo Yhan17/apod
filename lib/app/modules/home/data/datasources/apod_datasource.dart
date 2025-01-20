@@ -43,6 +43,7 @@ class ApodDatasourceImpl implements ApodDatasource {
 
   @override
   Future<Result<Unit, Exception>> saveApod(ApodEntity? apod) async {
+    final box = await Hive.openBox<ApodEntity>(_boxName);
     try {
       if (apod == null) {
         log(
@@ -52,7 +53,6 @@ class ApodDatasourceImpl implements ApodDatasource {
         return Error(Exception('APOD é nulo.'));
       }
 
-      final box = await Hive.openBox<ApodEntity>(_boxName);
       final key = AppPipes.formatDate(apod.date);
 
       if (box.containsKey(key)) {
@@ -69,6 +69,8 @@ class ApodDatasourceImpl implements ApodDatasource {
         'Erro ao salvar APOD na base de dados: $e',
       );
       return Error(Exception('Erro ao salvar APOD na base de dados: $e'));
+    } finally {
+      box.close();
     }
   }
 }
