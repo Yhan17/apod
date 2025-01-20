@@ -13,7 +13,11 @@ abstract class AppRoutes {
   static const favoriteDetails = PageRoute<ApodEntity>('/favorites-details');
 
   static final Map<String, WidgetBuilder> builders = {
-    home.path: (_) => HomeFactory.createPage(),
+    home.path: (context) {
+      final locale = Localizations.localeOf(context);
+      final languageCode = locale.languageCode;
+      return HomeFactory.createPage(languageCode: languageCode);
+    },
     favoriteList.path: (_) => FavoritesListFactory.createPage(),
     favoriteDetails.path: (context) {
       final apod = _argumentsOf<ApodEntity>(context);

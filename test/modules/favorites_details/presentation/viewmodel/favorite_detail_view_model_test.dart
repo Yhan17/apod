@@ -1,121 +1,90 @@
 import 'package:apod/app/core/entities/apod_entity.dart';
-import 'package:apod/app/core/http/failures/http_failure.dart';
-import 'package:apod/app/modules/home/domain/home_domain.dart';
-import 'package:apod/app/modules/home/presentation/home_presentation.dart';
+import 'package:apod/app/modules/favorites_list/domain/favorite_list_domain.dart';
+import 'package:apod/app/modules/favorites_list/presentation/favorites_list_presentation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:multiple_result/multiple_result.dart';
 
-class MockGetApodUsecase extends Mock implements GetApodUsecase {}
-
-class MockSaveApodUsecase extends Mock implements SaveApodUsecase {}
-
-class MockIsPodSavedUsecase extends Mock implements IsPodSavedUsecase {}
-
-class MockRemoveApodFromHomeUseCase extends Mock
-    implements RemoveApodFromHomeUseCase {}
+class MockGetFavoriteListUsecase extends Mock
+    implements GetFavoriteListUsecase {}
 
 void main() {
-  late MockGetApodUsecase mockGetApodUsecase;
-  late MockSaveApodUsecase mockSaveApodUsecase;
-  late MockIsPodSavedUsecase mockIsPodSavedUsecase;
-  late MockRemoveApodFromHomeUseCase mockRemoveApodFromHomeUseCase;
-  late HomeViewModel viewModel;
+  late MockGetFavoriteListUsecase mockUsecase;
+  late FavoriteListViewModel viewModel;
 
   setUp(() {
-    mockGetApodUsecase = MockGetApodUsecase();
-    mockSaveApodUsecase = MockSaveApodUsecase();
-    mockIsPodSavedUsecase = MockIsPodSavedUsecase();
-    mockRemoveApodFromHomeUseCase = MockRemoveApodFromHomeUseCase();
-    viewModel = HomeViewModel(
-      mockGetApodUsecase,
-      mockSaveApodUsecase,
-      mockIsPodSavedUsecase,
-      mockRemoveApodFromHomeUseCase,
-    );
+    mockUsecase = MockGetFavoriteListUsecase();
+    viewModel = FavoriteListViewModel(mockUsecase);
   });
 
-  group('HomeViewModel', () {
-    final mockApod = ApodEntity(
-      date: DateTime(2025),
-      explanation: 'Mock explanation',
-      mediaType: MediaType.image,
-      serviceVersion: '1.0',
-      title: 'Mock title',
-      url: 'https://mockurl.com',
-      copyright: 'Mock copyright',
-      hdUrl: 'https://mockhdurl.com',
-    );
+  group('FavoriteListViewModel', () {
+    final mockApodList = [
+      ApodEntity(
+        date: DateTime(2025),
+        explanation: 'Mock explanation 1',
+        mediaType: MediaType.image,
+        serviceVersion: '1.0',
+        title: 'Mock title 1',
+        url: 'https://mockurl1.com',
+        copyright: 'Mock copyright 1',
+        hdUrl: 'https://mockhdurl1.com',
+      ),
+      ApodEntity(
+        date: DateTime(2025),
+        explanation: 'Mock explanation 2',
+        mediaType: MediaType.image,
+        serviceVersion: '1.0',
+        title: 'Mock title 2',
+        url: 'https://mockurl2.com',
+        copyright: 'Mock copyright 2',
+        hdUrl: 'https://mockhdurl2.com',
+      ),
+    ];
 
-    test('should fetch APOD successfully', () async {
-      when(() => mockGetApodUsecase(date: any(named: 'date')))
-          .thenAnswer((_) async => Success(mockApod));
-      when(() => mockIsPodSavedUsecase(mockApod)).thenAnswer((_) async => true);
+    test('should update favorites when usecase returns success', () async {
+      when(() => mockUsecase()).thenAnswer((_) async => Success(mockApodList));
 
-      await viewModel.fetchApod(date: DateTime(2025));
+      await viewModel.fetchStoredApods();
 
-      expect(viewModel.apod, equals(mockApod));
+      expect(viewModel.favorites, equals(mockApodList));
       expect(viewModel.errorMessage, isNull);
-      expect(viewModel.buttonLabel, equals(FavoriteButtonLabel.unfavorite));
     });
 
-    test('should handle error when fetching APOD fails', () async {
-      when(() => mockGetApodUsecase(date: any(named: 'date')))
-          .thenAnswer((_) async => Error(HttpFailure.badRequest));
+    test('should update errorMessage when usecase returns error', () async {
+      final exception = Exception('Failed to fetch favorites');
+      when(() => mockUsecase()).thenAnswer((_) async => Error(exception));
 
-      await viewModel.fetchApod(date: DateTime(2025));
+      await viewModel.fetchStoredApods();
 
-      expect(viewModel.apod, isNull);
-      expect(viewModel.errorMessage, isNotNull);
-      expect(viewModel.buttonLabel, equals(FavoriteButtonLabel.empty));
+      expect(viewModel.favorites, isEmpty);
+      expect(viewModel.errorMessage, contains('Failed to fetch favorites'));
     });
 
-    test('should save APOD to database successfully', () async {
-      viewModel.apod = mockApod;
-      when(() => mockSaveApodUsecase(mockApod))
-          .thenAnswer((_) async => Success(unit));
-      when(() => mockIsPodSavedUsecase(mockApod)).thenAnswer((_) async => true);
+    test('should notify listeners on successful fetch', () async {
+      when(() => mockUsecase()).thenAnswer((_) async => Success(mockApodList));
 
-      final result = await viewModel.saveApodToDatabase();
+      var notified = false;
+      viewModel.addListener(() {
+        notified = true;
+      });
 
-      expect(result, contains('APOD salvo com sucesso na base de dados'));
-      expect(viewModel.buttonLabel, equals(FavoriteButtonLabel.unfavorite));
+      await viewModel.fetchStoredApods();
+
+      expect(notified, isTrue);
     });
 
-    test('should handle error when saving APOD to database fails', () async {
-      viewModel.apod = mockApod;
-      when(() => mockSaveApodUsecase(mockApod))
-          .thenAnswer((_) async => Error(Exception('Save failed')));
+    test('should notify listeners on fetch error', () async {
+      final exception = Exception('Failed to fetch favorites');
+      when(() => mockUsecase()).thenAnswer((_) async => Error(exception));
 
-      final result = await viewModel.saveApodToDatabase();
+      var notified = false;
+      viewModel.addListener(() {
+        notified = true;
+      });
 
-      expect(result, contains('Erro ao salvar APOD na base de dados'));
-      expect(viewModel.buttonLabel, equals(FavoriteButtonLabel.error));
-    });
+      await viewModel.fetchStoredApods();
 
-    test('should remove APOD from database successfully', () async {
-      viewModel.apod = mockApod;
-      when(() => mockRemoveApodFromHomeUseCase(mockApod))
-          .thenAnswer((_) async => Success(unit));
-      when(() => mockIsPodSavedUsecase(mockApod))
-          .thenAnswer((_) async => false);
-
-      final result = await viewModel.removeApodFromDatabase();
-
-      expect(result, contains('APOD removido com sucesso na base de dados'));
-      expect(viewModel.buttonLabel, equals(FavoriteButtonLabel.favorite));
-    });
-
-    test('should handle error when removing APOD from database fails',
-        () async {
-      viewModel.apod = mockApod;
-      when(() => mockRemoveApodFromHomeUseCase(mockApod))
-          .thenAnswer((_) async => Error(Exception('Remove failed')));
-
-      final result = await viewModel.removeApodFromDatabase();
-
-      expect(result, contains('Erro ao remover APOD na base de dados'));
-      expect(viewModel.buttonLabel, equals(FavoriteButtonLabel.error));
+      expect(notified, isTrue);
     });
   });
 }
