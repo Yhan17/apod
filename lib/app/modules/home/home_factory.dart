@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:translator/translator.dart';
 
 import '../../core/environment/environment.dart';
 import '../../core/http/nasa_apod_http_client.dart';
@@ -13,8 +14,13 @@ import 'presentation/page/home_page.dart';
 class HomeFactory {
   static HomeViewModel? _viewModel;
 
-  static Widget createPage({DateTime? date}) {
-    _viewModel ??= _buildViewModel();
+  static Widget createPage({
+    DateTime? date,
+    required String languageCode,
+  }) {
+    _viewModel ??= _buildViewModel(
+      languageCode: languageCode,
+    );
 
     if (date != null) {
       _viewModel!.fetchApod(date: date);
@@ -23,7 +29,7 @@ class HomeFactory {
     return HomePage(viewModel: _viewModel!);
   }
 
-  static HomeViewModel _buildViewModel() {
+  static HomeViewModel _buildViewModel({required String languageCode}) {
     final client = NasaApodClient(
       baseUrl: Environment.baseUrl,
       apiKey: Environment.apiKey,
@@ -42,12 +48,21 @@ class HomeFactory {
     final saveApodUseCase = SaveApodUsecase(repository);
     final isPodSavedUsecase = IsPodSavedUsecase(savedRepository);
     final removeApodUseCase = RemoveApodFromHomeUseCase(removeRepository);
+    TranslateTextService? translateTextService;
+
+    if (languageCode.isNotEmpty) {
+      translateTextService = TranslateTextServiceImpl(
+        GoogleTranslator(),
+        targetLanguage: languageCode,
+      );
+    }
 
     return HomeViewModel(
       useCase,
       saveApodUseCase,
       isPodSavedUsecase,
       removeApodUseCase,
+      translateTextService,
     );
   }
 

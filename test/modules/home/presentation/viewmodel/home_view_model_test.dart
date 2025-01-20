@@ -32,6 +32,7 @@ void main() {
       mockSaveApodUsecase,
       mockIsPodSavedUsecase,
       mockRemoveApodFromHomeUseCase,
+      null,
     );
   });
 
