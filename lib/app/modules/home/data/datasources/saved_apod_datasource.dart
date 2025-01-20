@@ -11,7 +11,10 @@ abstract class SavedApodDatasource {
 
 class SavedApodDatasourceImpl implements SavedApodDatasource {
   final String _boxName = 'apods';
-  
+  final HiveInterface _hive;
+
+  SavedApodDatasourceImpl(this._hive);
+
   @override
   Future<bool> isApodSaved(ApodEntity? apod) async {
     if (apod == null) {
@@ -22,7 +25,7 @@ class SavedApodDatasourceImpl implements SavedApodDatasource {
       return false;
     }
 
-    final box = await Hive.openBox<ApodEntity>(_boxName);
+    final box = await _hive.openBox<ApodEntity>(_boxName);
     try {
       final key = AppPipes.formatDate(apod.date);
       return box.containsKey(key);

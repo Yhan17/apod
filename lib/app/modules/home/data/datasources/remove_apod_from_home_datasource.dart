@@ -8,14 +8,15 @@ abstract class RemoveApodFromHomeDatasource {
   Future<Result<Unit, Exception>> removeApod(ApodEntity apod);
 }
 
-class RemoveApodDatasourceImpl implements RemoveApodFromHomeDatasource {
+class RemoveApodFromHomeDatasourceImpl implements RemoveApodFromHomeDatasource {
   final String _boxName = 'apods';
+  final HiveInterface _hive;
 
-  const RemoveApodDatasourceImpl();
+  const RemoveApodFromHomeDatasourceImpl(this._hive);
 
   @override
   Future<Result<Unit, Exception>> removeApod(ApodEntity apod) async {
-    final box = await Hive.openBox<ApodEntity>(_boxName);
+    final box = await _hive.openBox<ApodEntity>(_boxName);
     try {
       final key = AppPipes.formatDate(apod.date);
       if (box.containsKey(key)) {

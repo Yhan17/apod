@@ -31,6 +31,7 @@ dependencies:
   focus_detector: ^2.0.1
   home_widget: ^0.7.0
   skeletonizer: ^1.4.3
+  mocktail: ^1.0.4
 
 dev_dependencies:
   flutter_test:
