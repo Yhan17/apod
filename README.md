@@ -98,6 +98,9 @@ https://github.com/user-attachments/assets/0e87333f-b369-43c2-add5-67fb20bd0a40
 ### Tela de Detalhes Favoritos (Tablet) - Tema Claro e Escuro
 ![Tela de Detalhes Favoritos (Tablet) - Tema Claro e Escuro](/docs/favoritos_detalhes_claro.png) ![Tela de Detalhes Favoritos (Tablet) - Tema Claro e Escuro](/docs/favoritos_detalhes_escuro.png)
 
+### Tela de erro
+![Tela de erro](/docs/tela_erro.png)
+
 ### Seletor de Data
 ![Seletor de Data](/docs/seletor_data.png)
 
