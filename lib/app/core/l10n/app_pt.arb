@@ -35,5 +35,9 @@
     "loadingError": "Ops! Algo deu errado...",
     "@loadingError": {
         "description": "Label for error page"
+    },
+    "definedWidget": "Widget definido na home do seu dispostiivo",
+    "@definedWidget": {
+        "description": "Label for home widgetDefined"
     }
 }
