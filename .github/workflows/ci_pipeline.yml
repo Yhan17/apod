@@ -39,28 +39,17 @@ jobs:
 
       - name: Run build_runner
         run: flutter pub run build_runner build --delete-conflicting-outputs
-        
+
       - name: Run Tests
         run: flutter test --coverage
 
       - name: Generate Coverage Report
-        run: |
-          flutter pub global activate coverage
-          flutter pub global run coverage:format_coverage \
-            --lcov \
-            --in=coverage/lcov.info \
-            --out=coverage/lcovformatted.info \
-            --packages=.packages \
-            --report-on=lib
+        uses: VeryGoodOpenSource/very_good_coverage@v2
+        with:
+          path: "coverage/lcov.info"
 
       - name: Build APK
         run: flutter build apk --dart-define-from-file production.env
-
-      - name: Upload Test Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-report
-          path: coverage/lcovformatted.info
 
       - name: Upload APK
         uses: actions/upload-artifact@v3
