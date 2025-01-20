@@ -75,7 +75,9 @@ Bem-vindo ao **Aplicativo NASA APOD em Flutter**, uma aplicação móvel que exi
 ## Capturas de Tela
 
 ### Vídeo Apresentação
-![Vídeo Apresentação](/docs/app_funcionality.mov)
+
+https://github.com/user-attachments/assets/0e87333f-b369-43c2-add5-67fb20bd0a40
+
 
 ### Tela Inicial (Tablet) - Tema Claro e Escuro
 ![Tela Inicial (Tablet) - Imagem Tema Claro](/docs/inicial_claro.png) ![Tela Inicial (Tablet) - Imagem Tema Escuro](/docs/inicial_escuro.png)
