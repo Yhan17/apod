@@ -1,17 +1,21 @@
-import 'package:flutter/material.dart';
 import 'package:multiple_result/multiple_result.dart';
 
 import '../../../../core/entities/apod_entity.dart';
-import '../../../../core/mixins/loading_mixin.dart';
+import '../../../../core/types/view_model_type.dart';
 import '../../domain/favorite_list_domain.dart';
 
-class FavoriteListViewModel extends ChangeNotifier with LoadingMixin {
+class FavoriteListViewModel extends ViewModel {
   final GetFavoriteListUsecase _getFavoriteListUsecase;
   List<ApodEntity> _favorites = [];
   String? _errorMessage;
 
   List<ApodEntity> get favorites => _favorites;
   String? get errorMessage => _errorMessage;
+  
+  set favorites(List<ApodEntity> list) {
+    _favorites = list;
+    notifyListeners();
+  }
 
   FavoriteListViewModel(this._getFavoriteListUsecase);
 

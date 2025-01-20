@@ -10,13 +10,14 @@ abstract class RemoveApodDatasource {
 
 class RemoveApodDatasourceImpl implements RemoveApodDatasource {
   final String _boxName = 'apods';
+  final HiveInterface _hive;
 
-  const RemoveApodDatasourceImpl();
+  const RemoveApodDatasourceImpl(this._hive);
 
   @override
   Future<Result<Unit, Exception>> removeApod(ApodEntity apod) async {
+    final box = await _hive.openBox<ApodEntity>(_boxName);
     try {
-      final box = await Hive.openBox<ApodEntity>(_boxName);
       final key = AppPipes.formatDate(apod.date);
       if (box.containsKey(key)) {
         await box.delete(key);
@@ -26,6 +27,8 @@ class RemoveApodDatasourceImpl implements RemoveApodDatasource {
       }
     } catch (e) {
       return Error(Exception('Failed to remove APOD: $e'));
+    } finally {
+      box.close();
     }
   }
 }

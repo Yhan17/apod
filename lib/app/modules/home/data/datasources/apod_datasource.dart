@@ -16,12 +16,27 @@ abstract class ApodDatasource {
 
 class ApodDatasourceImpl implements ApodDatasource {
   final NasaApodClient _client;
+  final HiveInterface _hive;
   final String _boxName = 'apods';
+  Box<ApodEntity>? _box;
 
-  ApodDatasourceImpl(this._client);
+  ApodDatasourceImpl(
+    this._client,
+    this._hive,
+  );
+
+  Future<void> _ensureBoxOpen() async {
+    if (!_hive.isBoxOpen(_boxName)) {
+      _box = await _hive.openBox<ApodEntity>(_boxName);
+      log(name: 'APOD-DATABASE', 'Hive box "$_boxName" aberta.');
+    } else {
+      _box = _hive.box<ApodEntity>(_boxName);
+    }
+  }
 
   @override
   Future<Result<ApodEntity, HttpFailure>> getApod({DateTime? date}) async {
+    await _ensureBoxOpen();
     try {
       final uri = Uri(path: '/planetary/apod', queryParameters: {
         if (date != null) 'date': AppPipes.formatDate(date),
@@ -43,6 +58,7 @@ class ApodDatasourceImpl implements ApodDatasource {
 
   @override
   Future<Result<Unit, Exception>> saveApod(ApodEntity? apod) async {
+    await _ensureBoxOpen();
     try {
       if (apod == null) {
         log(
@@ -52,15 +68,14 @@ class ApodDatasourceImpl implements ApodDatasource {
         return Error(Exception('APOD é nulo.'));
       }
 
-      final box = await Hive.openBox<ApodEntity>(_boxName);
       final key = AppPipes.formatDate(apod.date);
 
-      if (box.containsKey(key)) {
+      if (_box!.containsKey(key)) {
         log(name: 'APOD-DATABASE', 'APOD já está salvo na base de dados.');
         return Error(Exception('APOD já está salvo na base de dados.'));
       }
 
-      await box.put(key, apod);
+      await _box!.put(key, apod);
       log(name: 'APOD-DATABASE', 'APOD salvo com sucesso na base de dados.');
       return const Success(unit);
     } catch (e) {

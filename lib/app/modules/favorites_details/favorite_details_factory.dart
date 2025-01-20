@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../core/entities/apod_entity.dart';
 import 'data/favorite_details_data.dart';
@@ -20,9 +21,10 @@ class FavoritesDetailsFactory {
   }
 
   static FavoriteDetailViewModel _buildViewModel(ApodEntity apod) {
+    final hive = Hive;
     final service = SaveApodInHomeServiceImpl();
 
-    final datasource = RemoveApodDatasourceImpl();
+    final datasource = RemoveApodDatasourceImpl(hive);
     final repository = RemoveApodRepositoryImpl(datasource);
     final usecase = RemoveApodUseCase(repository);
 

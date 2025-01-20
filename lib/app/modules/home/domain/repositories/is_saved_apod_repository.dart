@@ -1,5 +1,5 @@
 import '../../../../core/entities/apod_entity.dart';
 
-abstract class SavedApodRepository {
+abstract class IsSavedApodRepository {
   Future<bool> isApodSaved(ApodEntity? apod);
 }

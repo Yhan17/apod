@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/entities/apod_entity.dart';
-import '../../../../core/mixins/loading_mixin.dart';
+import '../../../../core/types/view_model_type.dart';
 import '../../domain/favorite_details_domain.dart';
 
-class FavoriteDetailViewModel extends ChangeNotifier with LoadingMixin {
+class FavoriteDetailViewModel extends ViewModel {
   final SaveApodInHomeService saveApodInHomeService;
   final RemoveApodUseCase removeApodUseCase;
   final ApodEntity apod;
@@ -17,9 +17,10 @@ class FavoriteDetailViewModel extends ChangeNotifier with LoadingMixin {
     required this.removeApodUseCase,
   });
 
-  Future<void> saveApodInHome() async {
+  Future<void> saveApodInHome({required VoidCallback onTransformWidget}) async {
     executeWithLoading(() async {
       await saveApodInHomeService(apod);
+      onTransformWidget();
     });
   }
 

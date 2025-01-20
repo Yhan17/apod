@@ -7,7 +7,6 @@ import '../../../../core/components/content_component.dart';
 import '../viewmodel/home_view_model.dart';
 import '../widgets/bottom_actions_widget.dart';
 import '../widgets/custom_error_widget.dart';
-import '../widgets/loading_widget.dart';
 
 class HomePage extends BasePage<HomeViewModel> {
   const HomePage({
@@ -40,38 +39,40 @@ class HomePage extends BasePage<HomeViewModel> {
         ],
       ),
       body: _BodyWidget(viewModel: viewModel),
-      bottomNavigationBar: BottomActionsWidget(
-        buttonLabel: viewModel.buttonLabel,
-        onDateChange: () async {
-          final selectedDate = await showDatePicker(
-            context: context,
-            initialDate: DateTime.now(),
-            firstDate: DateTime(1995, 6, 16),
-            lastDate: DateTime.now(),
-          );
-          if (selectedDate != null) {
-            viewModel.fetchApod(date: selectedDate);
-          }
-        },
-        onFavorite: () async {
-          final isApodAlreadySaved = await viewModel.isApodSaved();
-          if (isApodAlreadySaved) {
-            final message = await viewModel.removeApodFromDatabase();
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(message)),
-              );
-            }
-          } else {
-            final message = await viewModel.saveApodToDatabase();
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(message)),
-              );
-            }
-          }
-        },
-      ),
+      bottomNavigationBar: viewModel.errorMessage == null
+          ? BottomActionsWidget(
+              buttonLabel: viewModel.buttonLabel,
+              onDateChange: () async {
+                final selectedDate = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(1995, 6, 16),
+                  lastDate: DateTime.now(),
+                );
+                if (selectedDate != null) {
+                  viewModel.fetchApod(date: selectedDate);
+                }
+              },
+              onFavorite: () async {
+                final isApodAlreadySaved = await viewModel.isApodSaved();
+                if (isApodAlreadySaved) {
+                  final message = await viewModel.removeApodFromDatabase();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(message)),
+                    );
+                  }
+                } else {
+                  final message = await viewModel.saveApodToDatabase();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(message)),
+                    );
+                  }
+                }
+              },
+            )
+          : null,
     );
   }
 }
@@ -84,13 +85,14 @@ class _BodyWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (viewModel.errorMessage != null) {
-      return CustomErrorWidget(errorMessage: viewModel.errorMessage!);
+      return CustomErrorWidget(
+        errorMessage: viewModel.errorMessage!,
+        onRetry: () {
+          viewModel.fetchApod();
+        },
+      );
     }
 
-    if (viewModel.apod == null) {
-      return const LoadingWidget();
-    }
-
-    return ContentComponent(apod: viewModel.apod!);
+    return ContentComponent(apod: viewModel.apod);
   }
 }
