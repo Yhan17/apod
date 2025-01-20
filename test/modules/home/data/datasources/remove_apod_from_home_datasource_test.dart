@@ -37,6 +37,8 @@ void main() {
       when(() => mockHive.openBox<ApodEntity>(any()))
           .thenAnswer((_) async => mockBox);
       when(() => mockBox.close()).thenAnswer((_) async {});
+      when(() => mockHive.isBoxOpen('apods')).thenReturn(true);
+      when(() => mockHive.box<ApodEntity>(any())).thenReturn(mockBox);
     });
 
     test('should remove ApodEntity successfully', () async {
@@ -48,7 +50,6 @@ void main() {
 
       expect(result.isSuccess(), isTrue);
       verify(() => mockBox.delete(key)).called(1);
-      verify(() => mockBox.close()).called(1);
     });
 
     test('should return Exception when ApodEntity is not found', () async {
@@ -60,7 +61,6 @@ void main() {
       expect(result.isError(), isTrue);
       expect(result.tryGetError(), isA<Exception>());
       verifyNever(() => mockBox.delete(any()));
-      verify(() => mockBox.close()).called(1);
     });
 
     test('should return Exception when removing fails', () async {
@@ -73,7 +73,6 @@ void main() {
       expect(result.isError(), isTrue);
       expect(result.tryGetError(), isA<Exception>());
       verify(() => mockBox.delete(key)).called(1);
-      verify(() => mockBox.close()).called(1);
     });
   });
 }

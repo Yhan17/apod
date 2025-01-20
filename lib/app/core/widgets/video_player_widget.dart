@@ -46,7 +46,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       _isYoutube = true;
       _youtubeController = YoutubePlayerController(
         initialVideoId: videoId,
-        flags: const YoutubePlayerFlags(loop: true),
+        flags: const YoutubePlayerFlags(
+          autoPlay: false,
+        ),
       );
 
       return Future.value();
@@ -72,7 +74,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
               child: Center(child: CircularProgressIndicator()),
             );
           }
-      
+
           if (snapshot.hasError) {
             return SizedBox(
               height: 250,
@@ -84,21 +86,21 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
               ),
             );
           }
-      
+
           if (_isYoutube && _youtubeController != null) {
             return YoutubePlayer(
               controller: _youtubeController!,
               showVideoProgressIndicator: true,
             );
           }
-      
+
           if (!_isYoutube && _videoController != null) {
             return AspectRatio(
               aspectRatio: _videoController!.value.aspectRatio,
               child: VideoPlayer(_videoController!),
             );
           }
-      
+
           return const SizedBox(
             height: 250,
             child: Center(child: Text('Não foi possível reproduzir o vídeo.')),

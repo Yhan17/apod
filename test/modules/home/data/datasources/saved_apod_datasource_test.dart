@@ -18,10 +18,16 @@ void main() {
     mockHive = MockHiveInterface();
     mockBox = MockHiveBox();
     datasource = SavedApodDatasourceImpl(mockHive);
-
-    when(() => mockHive.openBox<ApodEntity>(any()))
-        .thenAnswer((_) async => mockBox);
-    when(() => mockBox.close()).thenAnswer((_) async {});
+    registerFallbackValue(ApodEntity(
+      date: DateTime(2025),
+      explanation: 'Fallback explanation',
+      mediaType: MediaType.image,
+      serviceVersion: '1.0',
+      title: 'Fallback title',
+      url: 'https://fallbackurl.com',
+      copyright: 'Fallback copyright',
+      hdUrl: 'https://fallbackhdurl.com',
+    ));
   });
 
   group('SavedApodDatasourceImpl', () {
@@ -37,6 +43,14 @@ void main() {
       hdUrl: 'https://mockhdurl.com',
     );
 
+    setUp(() {
+      when(() => mockHive.openBox<ApodEntity>(any()))
+          .thenAnswer((_) async => mockBox);
+      when(() => mockBox.close()).thenAnswer((_) async {});
+      when(() => mockHive.isBoxOpen('apods')).thenReturn(true);
+      when(() => mockHive.box<ApodEntity>(any())).thenReturn(mockBox);
+    });
+
     test('should return true when ApodEntity is saved', () async {
       final key = AppPipes.formatDate(mockApod.date);
       when(() => mockBox.containsKey(key)).thenReturn(true);
@@ -45,7 +59,6 @@ void main() {
 
       expect(result, isTrue);
       verify(() => mockBox.containsKey(key)).called(1);
-      verify(() => mockBox.close()).called(1);
     });
 
     test('should return false when ApodEntity is not saved', () async {
@@ -56,15 +69,13 @@ void main() {
 
       expect(result, isFalse);
       verify(() => mockBox.containsKey(key)).called(1);
-      verify(() => mockBox.close()).called(1);
     });
 
     test('should return false when ApodEntity is null', () async {
       final result = await datasource.isApodSaved(null);
 
       expect(result, isFalse);
-      verifyNever(() => mockBox.containsKey(any()));
-      verifyNever(() => mockBox.close());
+      verifyNever(() => mockBox.containsKey(any<String>()));
     });
 
     test('should return false when an exception occurs', () async {
@@ -76,7 +87,6 @@ void main() {
 
       expect(result, isFalse);
       verify(() => mockBox.containsKey(key)).called(1);
-      verify(() => mockBox.close()).called(1);
     });
   });
 }
