@@ -27,11 +27,24 @@ class HomeFactory {
       apiKey: Environment.apiKey,
     );
     final datasource = ApodDatasourceImpl(client);
+    final savedDatasource = SavedApodDatasourceImpl();
+    final removeDatasource = RemoveApodDatasourceImpl();
+
     final repository = ApodRepositoryImpl(datasource);
+    final savedRepository = SavedApodRepositoryImpl(savedDatasource);
+    final removeRepository = RemoveApodFromHomeRepositoryImpl(removeDatasource);
+
     final useCase = GetApodUsecase(repository);
     final saveApodUseCase = SaveApodUsecase(repository);
+    final isPodSavedUsecase = IsPodSavedUsecase(savedRepository);
+    final removeApodUseCase = RemoveApodFromHomeUseCase(removeRepository);
 
-    return HomeViewModel(useCase, saveApodUseCase);
+    return HomeViewModel(
+      useCase,
+      saveApodUseCase,
+      isPodSavedUsecase,
+      removeApodUseCase,
+    );
   }
 
   static void reset() {
